@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "commonjs",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "outDir": "./dist",
+    //   "rootDir": "./src", 
+      "baseUrl": "src",
+      "sourceMap": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "paths": {
+        "@config/*": ["config/*"] ,
+        "@helper/*": ["helper/*"] ,
+        "@modules/*": ["modules/*"] ,
+        "@routes/*": ["routes/*"] ,
+        "@middlewares/*": ["middlewares/*"] ,
+      }
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"]
+  }
+  
