@@ -1,462 +1,250 @@
-# CI-CMP-Bynder-Middleware
+# Opal Test App 1
 
-This project is a middleware integration between Bynder and Optimizely CMP (Content Marketing Platform). It facilitates asset management, synchronization, and event handling between the two platforms.
+A Node.js application that integrates with the Optimizely Opal Tools SDK to provide authenticated access to Campaign Management Platform (CMP) APIs through intelligent tools.
 
-## Table of Contents
+## Overview
 
-- [Use Cases](#use-cases)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Scripts](#scripts)
-- [Environment Variables](#environment-variables)
-- [API Endpoints](#api-endpoints)
-- [Manifest.json](#manifestjson)
-- [Manual Testing](#manual-testing)
-- [Contributing](#contributing)
-- [Author](#author)
-
----
-
-## Use Cases
-
-The CI-CMP-Bynder-Middleware is designed to streamline integration and synchronization between Bynder and Optimizely CMP. Below are the primary use cases for this middleware:
-
-1. **Asset Flagging and Transfer**  
-   Send assets from CMP to Bynder using a field or folder-based flag to categorize and manage assets efficiently.
-
-2. **Task-Based Asset Push**  
-   Push assets to Bynder after tasks are completed, either one at a time or in bulk, directly from the CMP library.
-
-3. **Targeted Folder Synchronization**  
-   Push assets from CMP to specific Bynder Dam, ensuring proper organization and storage.
-
-4. **Version Control**  
-   Always push the latest version of assets from CMP to Bynder, ensuring updates are reflected in the destination.
-
-5. **Field Updates**  
-   Update asset fields in Bynder to reflect the latest metadata or changes made in CMP based on mapping.
-
-6. **Real-Time Event Handling**  
-   Process asset-related events such as `asset_added`, `asset_modified`, and `asset_removed` to ensure synchronization between CMP and Bynder.
-
-7. **Custom Metadata Mapping**  
-   Map metadata fields between CMP and Bynder for seamless integration and enhanced asset categorization.
-
-8. **Tag Synchronization**  
-   Synchronize tags between CMP and Bynder to maintain consistency and improve asset discoverability.
-
-
----
+This application serves as a bridge between Opal's AI tools and external marketing platforms, specifically focusing on CMP (Campaign Management Platform) integration. It handles authentication, API calls, and data aggregation while providing a clean interface for Opal tools to access campaign data.
 
 ## Features
 
-- **Webhook Handling**: Processes asset-related events (`asset_added`, `asset_modified`, `asset_removed`) from CMP.
-- **Asset Synchronization**: Uploads, updates, and manages assets in Bynder.
-- **Field Mapping**: Maps CMP fields to Bynder metadata properties.
-- **Tag Management**: Synchronizes tags between CMP and Bynder.
-- **Queue Management**: Uses Redis and BullMQ for job queuing and processing.
-- **Error Handling**: Centralized error handling with Sentry integration.
-- **Sanity Checks**: Validates asset fields and configurations before processing.
-
----
+-   **Opal Tools Integration**: Custom tools registered with the Opal Tools SDK
+-   **Authentication Management**: OptiID-based authentication with automatic header generation
+-   **CMP API Integration**: Seamless integration with Campaign Management Platform APIs
+-   **Paginated Data Handling**: Automatic pagination support for large datasets
+-   **Error Handling**: Comprehensive error handling and logging
+-   **Modular Architecture**: Clean separation of concerns with organized modules
 
 ## Project Structure
 
-    ├── .github
-    │ ├──workflows/ # GitHub Actions workflows 
-    ├── .vscode/ # VSCode settings 
-    ├── src/ # Source code 
-    │ ├── config/ # Configuration files 
-    │ ├── helper/ # Utility functions and decorators 
-    │ ├── middlewares/ # Express middlewares 
-    │ ├── modules/ # Core modules for Bynder and CMP 
-    │ ├── routes/ # API routes 
-    │ └── index.ts # Application entry point 
-    ├── .env # Environment variables 
-    ├── Dockerfile # Docker configuration 
-    ├── Dockerfile.production # Production Docker configuration 
-    ├── package.json # Node.js dependencies and scripts 
-    ├── tsconfig.json # TypeScript configuration 
-    └── README.md # Project documentation
-
----
+```
+src/
+├── config/
+│   ├── config.ts          # Application configuration
+│   └── logger.ts          # Logging configuration
+├── helper/
+│   └── common/
+│       └── service.helper.ts  # Base service class with pagination support
+├── middlewares/
+│   ├── processUncaughtException.ts
+│   └── resolveApplicationError.ts
+├── modules/
+│   ├── cmp/
+│   │   ├── services/
+│   │   │   └── cmp.service.ts     # CMP API service
+│   │   └── utils/
+│   │       └── axios.cmp.ts       #  CMP Open API axios 
+├── routes/
+│   └── app.routes.ts      # Application routes
+└── index.ts               # Main application entry point
+```
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/ci-cmp-bynder-middleware.git
-   cd ci-cmp-bynder-middleware
-2. Install dependencies:
+1. **Clone the repository**
+
+    ```bash
+    git clone <repository-url>
+    cd opal-test-app-1
+    ```
+
+2. **Install dependencies**
+
     ```bash
     npm install
-3. Build the project
     ```
-    npm run build
 
----
-## Configuration
-1. Create a .env file in the root directory. Use .env.example as a reference.
-2. Update the environment variables with your credentials and configuration.
----
-## Usage
-#### Development
-Start the development server with hot-reloading:
+3. **Environment Setup**
+   Create a `.env` file with required configurations:
+
+    ```env
+    NODE_ENV='development'
+    PORT=3000
+    CMP_BASE_URL=https://api.cmp.optimizely.com
+    ```
+
+4. **Start the application**
+
+    ```bash
+    # Development
+    npm run dev
+
+    # Production
+    npm start
+    ```
+
+## Local Development with ngrok
+
+For local development and testing with Opal Tools, you'll need to expose your local server using ngrok to create a publicly accessible tunnel.
+
+### Setup ngrok
+
+1. **Install ngrok**
+   ```bash
+    download from https://ngrok.com/download
+   ```
+
+2. **Create ngrok account and authenticate**
+   ```bash
+   # Sign up at https://ngrok.com and get your auth token
+   ngrok config add-authtoken YOUR_AUTH_TOKEN
+   ```
+
+3. **Start ngrok tunnel**
+   ```bash
+   # In a separate terminal, expose your local server
+   ngrok http 3000
+   
+   ```
+
+4. **Use the ngrok URL**
+   - Copy the `https://` forwarding URL from ngrok output
+   - Use this URL when configuring your Opal Tools integration
+   - Example: `https://abc123.ngrok.io`
+
+## Register your tool to Opal
+
+Once your application is running and exposed via ngrok, you need to register your tools with Optimizely Opal.
+
+### Step-by-step Registration
+
+1. **Copy the ngrok HTTPS link**
+   - From your ngrok terminal output, copy the `https://` forwarding URL
+   - Example: `https://abc123.ngrok.io`
+   - **Important**: Use the HTTPS URL, not HTTP
+
+2. **Navigate to Opal Tools Registry**
+   - Go to [Optimizely Opal](https://opal.optimizely.com)
+   - Navigate to **Tools Registry** page
+   - Click **Add Tool Registry**
+
+3. **Configure Tool Registry**
+   - **Registry URL**: `<Enter your ngrok HTTPS URL>/discovery`
+   - **Name**: Give your tool registry a descriptive name (e.g., "CMP Tools - Local Dev")
+   - **Description**: Optional description of your tools
+   - **Authentication**: Configure if your tools require specific authentication
+
+4. **Save and Verify**
+   - Click **Save** to register your tools
+   - Opal will attempt to discover tools from your endpoint
+   - Verify that your `campaign_list_tool` appears in the registry
+
+## Tool Discovery
+
+When you register your ngrok URL, Opal will automatically discover available tools by calling your application's tool discovery endpoint. The Opal Tools SDK handles this automatically.
+
+Your registered tools will appear with:
+- **Tool Name**: `campaign_list_tool`
+
+### Testing Your Registered Tools
+
+1. **Navigate to Opal Chat or Workflows**
+2. **Invoke your tool** by typing commands like:
+   ```
+   campaign_list_tool from CMP platform
+   ```
+3. **Verify results** are returned correctly
+
+## Opal Tools Integration
+
+### Campaign List Tool
+
+The application provides a `campaign_list_tool` that allows Opal to fetch campaigns from marketing platforms:
+
+```typescript
+@tool({
+    name: 'campaign_list_tool',
+    description: 'List all campaigns from a marketing platform',
+    authRequirements: {
+        provider: 'OptiID',
+        scopeBundle: 'scheme',
+        required: true,
+    },
+    parameters: [
+        {
+            name: 'platform',
+            type: ParameterType.String,
+            description: 'The marketing platform to fetch campaigns from',
+            required: true,
+        },
+    ],
+})
 ```
-npm run dev
-```
 
-#### Production
-1. Build the project:
-```
-npm run build
-```
+### Authentication Flow
 
-2. Start the server:
-```
-npm run start
-```
+1. **Tool Invocation**: User calls the tool through Opal
+2. **Authentication**: Opal Tools SDK handles OptiID authentication
+3. **Header Generation**: Authentication data is transformed into API headers
+4. **API Calls**: Headers are used for authenticated CMP API requests
+5. **Data Return**: Campaign data is returned to Opal
 
-#### Docker
-Build and run the Docker container:
-```
-docker build -t ci-cmp-bynder-middleware .
-docker run -p 8000:8000 --env-file .env ci-cmp-bynder-middleware
-```
----
-## Scripts
-* ```npm run build```: Compiles the TypeScript code into JavaScript.
-* ```npm run start```: Starts the application in production mode.
-* ```npm run dev```: Starts the application in development mode with hot-reloading.
-* ```npm run lint```: Runs ESLint to check for code quality issues.
-* ```npm run lint:fix```: Fixes linting issues automatically.
-* `npm run prettier`: Checks code formatting with Prettier.
-* `npm run prettier:fix`: Formats code with Prettier.
+### Generated Headers
 
----
-## Environment Variables
+The application automatically generates the following headers from authentication data:
 
-The following environment variables are required for the application to function properly:
+| Header              | Description                       |
+| ------------------- | --------------------------------- |
+| `Authorization`     | Bearer token from OptiID          |
+| `x-auth-token-type` | Token type identifier (`opti-id`) |
+| `x-org-sso-id`      | Organization SSO identifier       |
+| `x-request-id`      | Unique request identifier         |
+| `Accept`            | Content type (`application/json`) |
+| `Accept-Encoding`   | Compression support (`gzip`)      |
 
-| Variable                     | Description                                   |
-|------------------------------|-----------------------------------------------|
-| `NODE_ENV`                   | Application environment (`development`, `production`) |
-| `PORT`                       | Port number for the server                   |
-| `WEBHOOK_SECRET`             | Secret for verifying webhooks                |
-| `APP_CLIENT_ID`              | CMP client ID                                |
-| `APP_CLIENT_SECRET`          | CMP client secret                            |
-| `ACCESS_TOKEN_BASE_URL`      | CMP access token URL                         |
-| `CMP_BASE_URL`               | CMP API base URL                             |
-| `BYNDER_BASE_URL`            | Bynder API base URL                          |
-| `BYNDER_PERMANENT_ACCESS_TOKEN` | Bynder permanent access token              |
-| `REDIS_HOST`                 | Redis host                                   |
-| `REDIS_PASSWORD`             | Redis password                               |
-| `SENTRY_DSN`                 | Sentry DSN for error tracking                |
 
-Refer to the `.env.example` file for a complete list of environment variables and their expected values.
+## Development
 
----
+### Adding New Tools
 
-## API Endpoints
+1. Create a new method in `Tools` class
+2. Decorate with `@tool()` decorator
+3. Define authentication requirements and parameters
+4. Implement the tool logic
 
-### Webhooks
 
-- **POST** `/api/webhooks/cmp`  
-  Handles CMP webhook events.
+## Error Handling
 
-### Mapper
+The application includes comprehensive error handling:
 
-- **POST** `/api/mapper`  
-  Processes field and tag mappings.
+-   **Global Error Middleware**: Catches and processes uncaught exceptions
+-   **Service Error Handler**: Wraps service calls in try-catch blocks
+-   **API Error Transformation**: Converts API errors to user-friendly messages
+-   **Logging**: Detailed logging of all operations and errors
 
-### Health Check
 
-- **GET** `/`  
-  Returns a simple "Hello, TypeScript with Express!" message.
+## Monitoring and Logging
 
-- **GET** `/_status`  
-  Returns the application status.
+The application includes structured logging for:
 
----
+-   API request/response cycles
+-   Authentication events
+-   Error tracking
 
-## Manifest.json
+## Dependencies
 
-The `manifest.json` file contains metadata and configuration parameters required for the middleware integration. It defines the application's name, description, parameters, and webhooks.
+### Core Dependencies
 
-### Key Fields
+-   **Express**: Web framework
+-   **@optimizely-opal/opal-tools-sdk**: Opal integration
+-   **Axios**: HTTP client
+-   **Helmet**: Security middleware
+-   **CORS**: Cross-origin support
 
-- **name**: The name of the middleware application.
-- **description**: A brief description of the middleware's purpose.
-- **parameters**: Configuration parameters required for the application to function. Each parameter includes:
-  - `label`: A human-readable label for the parameter.
-  - `type`: The data type of the parameter (e.g., `string`, `json`, `secret`).
-  - `required`: Indicates whether the parameter is mandatory.
-- **webhooks**: Defines webhook configurations, including:
-  - `description`: A description of the webhook's purpose.
-  - `secret`: The secret key used to verify webhook requests.
-  - `endpoint`: The API endpoint for the webhook.
-  - `event_names`: A list of event names the webhook listens to.
+### Development Dependencies
 
-### Example Structure
+-   **TypeScript**: Type safety
+-   **ts-node**: TypeScript execution
+-   **nodemon**: Development server
 
-```json
-{
-  "name": "si-cmp-bynder-middleware",
-  "description": "CMP Bynder Middleware Integration",
-  "parameters": {
-    "ACCESS_TOKEN_BASE_URL": {
-      "label": "Access token URL for CMP",
-      "type": "string",
-      "required": true
-    },
-    "CMP_BASE_URL": {
-      "label": "CMP Base URL for API request",
-      "type": "string",
-      "required": true
-    },
-    "BYNDER_BASE_URL": {
-      "label": "Bynder Base URL for API request",
-      "type": "string",
-      "required": true
-    },
-    "BYNDER_PERMANENT_ACCESS_TOKEN": {
-      "label": "Bynder Permanent Access Token",
-      "type": "secret",
-      "required": true
-    },
-    "BYNDER_WAITING_ROOM": {
-      "label": "Enable Bynder Waiting Room",
-      "type": "string",
-      "required": true
-    },
-    "BYNDER_USE_HARD_CODED_META_PROPERTY": {
-      "label": "Bynder Use Hardcoded Meta Properties",
-      "type": "string",
-      "required": true
-    },
-    "BYNDER_BRAND_ID": {
-      "label": "Bynder Brand ID",
-      "type": "string",
-      "required": true
-    },
-    "BYNDER_USE_EXTERNAL_TAG": {
-      "label": "Bynder Use External Tag",
-      "type": "string",
-      "required": true
-    },
-    "_config_field_mapping": {
-      "label": "Field Mapping JSON",
-      "type": "json",
-      "required": true
-    },
-    "_config_tag_mapping": {
-      "label": "Tag Mapping JSON",
-      "type": "json",
-      "required": true
-    },
-    "_config_send_indicator": {
-      "label": "Send Indicator JSON",
-      "type": "json",
-      "required": true
-    },
-    "_config_delete_behavior": {
-      "label": "Delete Behavior",
-      "type": "string",
-      "required": true
-    },
-    "WEBHOOK_SECRET": {
-      "label": "Webhook Secret",
-      "type": "secret",
-      "required": true
-    },
-    "SENTRY_DSN": {
-      "label": "Sentry DSN",
-      "type": "secret",
-      "required": true
-    },
-    "SENTRY_TAG": {
-      "label": "Sentry Unique Tag",
-      "type": "string",
-      "required": true
-    },
-    "REDIS_HOST": {
-      "label": "Redis Host",
-      "type": "secret",
-      "required": true
-    },
-    "REDIS_PASSWORD": {
-      "label": "Redis Password",
-      "type": "secret",
-      "required": true
-    },
-    "QUEUE_NAME": {
-      "label": "Queue Name, leave it blank if queue is not needed",
-      "type": "string"
-    }
-  }
-}
-```
----
-## Manual Testing
 
-This section outlines the steps and test cases for manually testing the CI-CMP-Bynder-Middleware integration.
+## Support
 
-### 1. Uploading an Asset in CMP
-
-#### Test Cases:
-1. **Verify asset upload succeeds when all required fields are populated**  
-   - **Given**: Asset Destination is set to a value (e.g., Bynder)  
-   - **Or**: Folder values are populated if required  
-   - **When**: The asset is uploaded in CMP  
-   - **Then**: The asset is successfully uploaded to the corresponding 3rd party system  
-
-2. **Verify asset upload fails when Asset Destination is not provided**  
-   - **Given**: Asset Destination is empty  
-   - **When**: The asset is uploaded in CMP  
-   - **Then**: The asset will not upload  
-
-3. **Verify asset upload fails when folder value is required but not provided**  
-   - **Given**: Asset Destination requires a folder value  
-   - **And**: No folder value is provided  
-   - **When**: The asset is uploaded in CMP  
-   - **Then**: The asset will not upload  
-  
-
----
-
-### 2. Deleting an Asset in CMP
-
-#### Test Cases:
-1. **Verify asset deletion succeeds when Delete Behavior is set to 'Delete'**  
-   - **Given**: Delete Behavior is set to 'Delete' in Configuration  
-   - **When**: The asset is deleted in CMP  
-   - **Then**: The corresponding asset is deleted in the 3rd party system  
-
-2. **Verify asset deletion does not occur when Delete Behavior is not 'Delete'**  
-   - **Given**: Delete Behavior is set to 'Retain' or any other value  
-   - **When**: The asset is deleted in CMP  
-   - **Then**: The asset remains in the 3rd party system  
-
----
-
-### 3. Updating an Asset’s Field in CMP
-
-#### Test Cases:
-1. **Verify asset field updates in 3rd party when correct mapping is provided**  
-   - **Given**: The field property value in Configuration has a 1:1 mapping  
-   - **When**: The asset field is updated in CMP  
-   - **Then**: The corresponding labels/tags/meta-properties are updated in the 3rd party system  
-
-2. **Verify asset field does not update when no mapping is provided**  
-   - **Given**: The field property value in Configuration does not contain a mapping  
-   - **When**: The asset field is updated in CMP  
-   - **Then**: The corresponding field in the 3rd party remains unchanged  
-
-3. **Verify only mapped fields are updated in the 3rd party system**  
-   - **Given**: Some fields have a 1:1 mapping and some do not  
-   - **When**: Multiple asset fields are updated in CMP  
-   - **Then**: Only the mapped fields are updated in the 3rd party system  
-
----
-
-### 4. Updating an Asset’s Title in CMP
-
-#### Test Cases:
-1. **Verify asset title update in 3rd party system**  
-   - **Given**: An asset exists in CMP and the 3rd party system  
-   - **When**: The asset title is updated in CMP  
-   - **Then**: The corresponding asset name is updated in the 3rd party system  
-
----
-
-### 5. Deleting an Asset in 3rd Party while Keeping in CMP
-
-#### Test Cases:
-1. **Verify asset deletion succeeds when Delete Behavior is set to 'Delete'**  
-   - **Given**: Delete Behavior is set to 'Delete' in Configuration  
-   - **When**: The asset destination field is removed (empty)  
-   - **Then**: The corresponding asset is deleted in the 3rd party system  
-
-2. **Verify asset deletion does not occur when Delete Behavior is not 'Delete'**  
-   - **Given**: Delete Behavior is set to 'Retain' or any other value  
-   - **When**: The asset destination field is removed (empty)  
-   - **Then**: The asset remains in the 3rd party system  
-
----
-
-### 6. Uploading a New Version of an Asset in CMP
-
-#### Test Cases:
-1. **Verify new version creation when supported by the 3rd party system**  
-   - **Given**: The 3rd party system supports versioning  
-   - **When**: A new version of an asset is uploaded in CMP  
-   - **Then**: A new version of the asset is created in the 3rd party system  
-
-2. **Verify asset update instead of new version creation when versioning is not supported**  
-   - **Given**: The 3rd party system does not support versioning  
-   - **When**: A new version of an asset is uploaded in CMP  
-   - **Then**: The existing asset in the 3rd party system is updated instead of creating a new version  
-
-3. **Verify error handling when version update fails**  
-   - **Given**: A network or API failure occurs during version update  
-   - **When**: A new version of an asset is uploaded in CMP  
-   - **Then**: The version update process fails gracefully with an appropriate error logged in the console or in the monitoring system  
-
----
-
-### 7. Uploading Multiple Files at the Same Time
-
-#### Test Cases:
-1. **Verify multiple files are uploaded sequentially using a queue**  
-   - **Given**: Multiple files are uploaded at the same time  
-   - **When**: The upload process starts  
-   - **Then**: The files are uploaded one after another in a queue  
-
-2. **Verify upload continues when one file fails**  
-   - **Given**: Multiple files are in the queue  
-   - **And**: One file fails to upload due to an error  
-   - **When**: The upload process continues  
-   - **Then**: The remaining files should still be uploaded  
-
-3. **Verify error handling when all file uploads fail**  
-   - **Given**: A network or API failure occurs  
-   - **When**: Multiple files are uploaded at the same time  
-   - **Then**: An appropriate error message is logged in the console or in the monitoring system  
-## Contributing
-
-We welcome contributions to the CI-CMP-Bynder-Middleware project! To contribute, follow these steps:
-
-1. Fork the repository.
-2. Create a new branch:
-```
-git checkout -b feature-name
-```
-3. Commit your changes
-```
-git commit -m "Add feature-name"
-```
-4. Push to the branch
-```
-git push origin feature-name
-```
-5. Open a pull request.
-
-**Guidelines**
-- Ensure your code is well-documented and follows the project's coding standards.
-- Write clear and concise commit messages.
-- Update the documentation if your changes affect it.
-- Be respectful and constructive in code reviews and discussions.
-Thank you for contributing to the project!
----
-## Author
-
-This project is maintained by:
+For additional support, please contact,
 
 **Bivor Adrito**  
-- GitHub: [@bivor-adrito](https://github.com/bivor-adrito)  
-- Email: bivor500@gmail.com  
+- Email: 
+  - bivor.adrito@optimizely.com 
+  - bivor500@gmail.com 
+- GitHub: [bivor-adrito](https://github.com/bivor-adrito)
 
-Feel free to reach out for any questions or collaboration opportunities!

@@ -1,28 +1,17 @@
 import { config } from '@config/config';
 import { logger } from '@config/logger';
 
-import { initializeSentry } from '@config/sentry';
 import { processUncaughtException } from '@middlewares/processUncaughtError';
 import { resolveApplicationError } from '@middlewares/resolveApplicationError';
 import { CmpAssetService } from '@modules/cmp/services/cmp.service';
 import { ParameterType, tool, ToolsService } from '@optimizely-opal/opal-tools-sdk';
 import appRoutes from '@routes/app.routes';
-import mapperRoutes from '@routes/mapper.routes';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
 import helmet from 'helmet';
 import 'module-alias/register';
-import path from 'path';
-import { Worker } from 'worker_threads';
-
-if (config.redis.queueName) {
-    const workerFile = process.env.NODE_ENV === 'production' ? 'worker.js' : 'worker.ts';
-    new Worker(path.resolve(__dirname, workerFile), {
-        execArgv: ['-r', 'tsconfig-paths/register'],
-    });
-}
 
 const app = express();
 const port = config.port;
@@ -36,19 +25,12 @@ app.use(cors());
 app.options('*', cors());
 
 //? Webhook routes
-// app.use('/api/webhooks', webhookRoutes);
-app.use('/api/mapper', mapperRoutes);
-
-//? Opal tool route
 
 app.use('/', appRoutes); // Health and Status route
-
-initializeSentry();
 
 app.use(processUncaughtException);
 app.use(resolveApplicationError);
 new ToolsService(app);
-
 class Tools {
     @tool({
         name: 'campaign_list_tool',
@@ -87,7 +69,7 @@ class Tools {
         // Simulate fetching campaigns from the specified platform
         const campaigns = await CmpAssetService.fetchAllCampaigns(headers);
         return {
-            campaigns
+            campaigns,
         };
     }
 }

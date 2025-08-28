@@ -1,108 +1,11 @@
 {
-  "name": "si-cmp-bynder-middleware",
+  "name": "opal-test-app",
   "description": "CMP Bynder Middleware Integration",
   "parameters": {
-    "ACCESS_TOKEN_BASE_URL": {
-      "label": "Access token URL for CMP",
-      "type": "string",
-      "required": true
-    },
     "CMP_BASE_URL": {
       "label": "CMP Base URL for API request",
       "type": "string",
       "required": true
-    },
-    "BYNDER_BASE_URL": {
-      "label": "Bynder Base URL for API request",
-      "type": "string",
-      "required": true
-    },
-    "BYNDER_PERMANENT_ACCESS_TOKEN": {
-      "label": "Bynder Permanent Access Token",
-      "type": "secret",
-      "required": true
-    },
-    "BYNDER_WAITING_ROOM": {
-      "label": "Enable Bynder Waiting Room",
-      "type": "string",
-      "required": true
-    },
-    "BYNDER_USE_HARD_CODED_META_PROPERTY": {
-      "label": "Bynder Use Hardcoded Meta Properties",
-      "type": "string",
-      "required": true
-    },
-    "BYNDER_BRAND_ID": {
-      "label": "Bynder Brand ID",
-      "type": "string",
-      "required": true
-    },
-    "BYNDER_USE_EXTERNAL_TAG": {
-      "label": "Bynder Use External Tag",
-      "type": "string",
-      "required": true
-    },
-    "_bynder_hard_coded_meta_properties": {
-      "label": "Bynder Hard Coded Meta Properties",
-      "type": "json",
-      "required": false
-    },
-    "_config_field_mapping": {
-      "label": "Field Mapping JSON",
-      "type": "json",
-      "required": true
-    },
-    "_config_tag_mapping": {
-      "label": "Tag Mapping JSON",
-      "type": "json",
-      "required": true
-    },
-    "_config_send_indicator": {
-      "label": "Send Indicator JSON",
-      "type": "json",
-      "required": true
-    },
-    "_config_delete_behavior": {
-      "label": "Delete Behavior",
-      "type": "string",
-      "required": true
-    },
-    "WEBHOOK_SECRET": {
-      "label": "Webhook Secret",
-      "type": "secret",
-      "required": true
-    },
-    "SENTRY_DSN": {
-      "label": "Sentry DSN",
-      "type": "secret",
-      "required": true
-    },
-    "SENTRY_TAG": {
-      "label": "Sentry Unique Tag",
-      "type": "string",
-      "required": true
-    },
-    "REDIS_HOST": {
-      "label": "Redis Host",
-      "type": "secret",
-      "required": true
-    },
-    "REDIS_PASSWORD": {
-      "label": "Redis Password",
-      "type": "secret",
-      "required": true
-    },
-    "QUEUE_NAME": {
-      "label": "Queue Name, leave it blank if queue is not needed",
-      "type": "string"
-    }
-  },
-  "webhooks": {
-    "sharepoint_middleware_integrationn_library_events": {
-      "description": "Webhook for CMP's Sharepoint Integration",
-      "secret": "bm9uZV9vZl95b3VyX2J1aXNuZXNz",
-      "endpoint": "/api/cmp_event",
-      "event_names": ["asset_added", "asset_modified", "asset_removed"]
     }
   }
 }

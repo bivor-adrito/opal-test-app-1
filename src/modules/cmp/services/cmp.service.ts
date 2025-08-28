@@ -4,11 +4,9 @@ import { Service } from '@helper/common/service.helper';
 import { ensureAssetsFolder } from '@helper/utils/file.manager';
 import { cmpApiInstance } from '@modules/cmp/utils/axios.cmp';
 
-import { generateAddLineagePayload } from '../utils/lineage.utils';
-
 import { asyncErrorHandler } from '@helper/decorators/asyncErrorHandler.decorator';
 import { fileDownloadInstance } from '@helper/utils/file.download';
-import { Asset, AssetField, AssetLabel, AssetLineage, PaginatedData, ThirdPartyNames } from '../types/library.types';
+import { Asset, AssetField, AssetLabel, AssetLineage, PaginatedData } from '../types/library.types';
 
 /**
  * Abstract CMP API Service class.
@@ -72,18 +70,6 @@ export abstract class CmpAssetService extends Service {
     } //+
 
     /**
-     * Creates a new lineage for an asset.
-     * @param assetId Id of the asset in CMP
-     * @param uri The uri of the asset in third-party
-     * @param destination Third-party name. Optional
-     */
-    @asyncErrorHandler
-    public static async addAssetLineage(assetId: string, uri: string, destination: ThirdPartyNames = 'Bynder') {
-        const payload = generateAddLineagePayload(uri, destination);
-        await cmpApiInstance.post(`/v3/assets/${assetId}/lineages`, payload);
-    }
-
-    /**
      * Deletes an asset lineage from CMP.
      * @param assetId Id of the asset in CMP
      * @param lineageId Id of the lineage we want to remove from CMP
@@ -128,6 +114,12 @@ export abstract class CmpAssetService extends Service {
         });
     }
 
+    /**
+     * Fetches all campaigns from the API, handling pagination automatically.
+    *
+    * @param headers - Optional HTTP headers to include in the API request.
+    * @returns A promise that resolves with the complete list of campaigns.
+    */
     @asyncErrorHandler
     public static async fetchAllCampaigns(headers?: any) {
         const initialUrl = `/v3/campaigns?offset=0&page_size=20`;

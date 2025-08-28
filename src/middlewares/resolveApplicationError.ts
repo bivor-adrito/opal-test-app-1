@@ -1,6 +1,5 @@
 import { config } from '@config/config';
 import { logger } from '@config/logger';
-import { captureException } from '@config/sentry';
 import { ApiError } from '@helper/utils/api.error';
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -44,7 +43,7 @@ export const resolveApplicationError = async (err: ApiError, req: Request, res: 
     }
 
     if (err?.statusCode !== StatusCodes.NOT_MODIFIED) {
-        captureException(err);
+        // captureException(err);
     }
 
     res.status(statusCode).send(response);
