@@ -23,9 +23,9 @@ export const verifyWebhookSecret = (req: Request, res: Response, next: NextFunct
     throw new ApiError(StatusCodes.FORBIDDEN, 'Missing webhook secret');
   }
 
-  if (callbackSecret !== config.webhook.secret) {
-    throw new ApiError(StatusCodes.FORBIDDEN, 'Invalid webhook secret');
-  }
+  // if (callbackSecret !== config.webhook.secret) {
+  //   throw new ApiError(StatusCodes.FORBIDDEN, 'Invalid webhook secret');
+  // }
 
   next();
 };
