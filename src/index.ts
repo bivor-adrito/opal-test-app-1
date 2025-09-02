@@ -1,5 +1,6 @@
 import { config } from '@config/config';
 import { logger } from '@config/logger';
+import { parseXmlToObj } from '@helper/common/common.helper';
 
 import { processUncaughtException } from '@middlewares/processUncaughtError';
 import { resolveApplicationError } from '@middlewares/resolveApplicationError';
@@ -70,6 +71,51 @@ class Tools {
         const campaigns = await CmpAssetService.fetchAllCampaigns(headers);
         return {
             campaigns,
+        };
+    }
+
+    @tool({
+        name: 'cmp_app_status',
+        description:
+            'Get the status of the CMP application. From the rss feed make a table of all the incident related to CMP. The CMP incidents includes CMP in the title. The columns will be title, description, and incident link.',
+        parameters: [],
+    })
+    async cmpAppStatus(): Promise<any> {
+        // Example implementation - replace with actual logic to fetch campaigns
+
+        const axios = require('axios');
+
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: 'https://status.optimizely.com/history.rss',
+            headers: {},
+        };
+
+        const axiosInstance = axios.create(config);
+
+        const response = await axiosInstance.request(config);
+        // Convert XML to JSON
+        const jsonData = await parseXmlToObj<any>(response.data);
+
+        // Extract RSS items
+        const items = jsonData?.rss?.channel?.item || [];
+
+        // Filter CMP-related incidents
+        const cmpIncidents = items.filter((item: any) => item.title && item.title.toLowerCase().includes('cmp'));
+
+        // Format the incidents for table display
+        const formattedIncidents = cmpIncidents.map((item: any) => ({
+            title: item.title || 'N/A',
+            description: item.description || 'N/A',
+            incident_link: item.link || 'N/A',
+            pub_date: item.pubDate || 'N/A',
+        }));
+
+        return {
+            total_incidents: formattedIncidents.length,
+            cmp_incidents: formattedIncidents,
+            raw_data: jsonData, // For debugging purposes
         };
     }
 }
