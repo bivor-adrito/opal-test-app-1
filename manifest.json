@@ -2,10 +2,6 @@
   "name": "opal-test-app",
   "description": "CMP Bynder Middleware Integration",
   "parameters": {
-    "CMP_BASE_URL": {
-      "label": "CMP Base URL for API request",
-      "type": "string",
-      "required": true
-    }
+    
   }
 }

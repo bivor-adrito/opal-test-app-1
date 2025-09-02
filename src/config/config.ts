@@ -11,7 +11,7 @@ const envVarsSchema = z
         NODE_ENV: z.enum(['production', 'development', 'test']),
         PORT: z.string().default('8000'),
 
-        CMP_BASE_URL: z.string().nonempty(),
+        // CMP_BASE_URL: z.string().nonempty(),
     })
     .passthrough(); // Allow additional properties
 
@@ -24,6 +24,6 @@ export const config = {
     port: parseInt(envVars.PORT, 10),
 
     urls: {
-        cmpBase: envVars.CMP_BASE_URL,
+        cmpBase: 'https://api.cmp.optimizely.com',
     },
 };
